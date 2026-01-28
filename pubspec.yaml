@@ -29,9 +29,8 @@ dependencies:
   lottie: ^2.7.0
   
   # Notifications
-  # flutter_local_notifications: ^15.1.1
   flutter_local_notifications: ^20.0.0
-  timezone: ^0.9.2
+  timezone: ^0.10.1
   
   # UI components
   cupertino_icons: ^1.0.2
@@ -48,6 +47,6 @@ flutter:
   uses-material-design: true
   
   assets:
-  #  - assets/images/
-  #  - assets/animations/
-  #  - assets/icons/
+      #  - assets/images/
+      #  - assets/animations/
+      #  - assets/icons/
