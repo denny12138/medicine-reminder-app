@@ -1,0 +1,50 @@
+workflows:
+  flutter-android:
+    name: Build medicine reminder APK
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      android_signing:
+        - keystore_reference
+      vars:
+        CM_BUILD_NAME: medicine_reminder
+        CM_KEYSTORE_ALIAS: medicine_reminder_key
+        CM_KEYSTORE_PRIVATE_KEY_PASSWORD: password
+        CM_KEYSTORE_PASSWORD: password
+        CM_KEYSTORE_KEY_PASSWORD: password
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+      cancel_previous_builds: true
+    scripts:
+      - name: 安装Flutter依赖
+        script: |
+          flutter packages pub get
+      - name: 验证Android许可证
+        script: |
+          yes | flutter doctor --android-licenses
+      - name: 运行测试
+        script: |
+          flutter test
+      - name: 构建Release版APK
+        script: |
+          flutter build apk --release --build-name=1.0.0 --build-number=1
+      - name: 构建App Bundle
+        script: |
+          flutter build appbundle --release --build-name=1.0.0 --build-number=1
+    artifacts:
+      - app/build/outputs/**/**/*.aab
+      - app/build/outputs/**/**/*.apk
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - dennymailbox@163.com
+        notify:
+          success: true
+          failure: true
