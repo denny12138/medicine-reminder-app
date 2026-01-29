@@ -7,10 +7,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
-    // Android 设置：参数名改为 defaultIcon
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    
-    // iOS 设置
     const iosSettings = DarwinInitializationSettings();
 
     const settings = InitializationSettings(
@@ -18,15 +15,14 @@ class NotificationService {
       iOS: iosSettings,
     );
 
-    // 初始化：这里必须使用命名参数 initializationSettings
+    // 1. 初始化方法：settings 是位置参数（不带名字）
     await _notifications.initialize(
-      settings, 
+      settings,
       onDidReceiveNotificationResponse: (NotificationResponse payload) {
         // 处理通知点击事件
       },
     );
 
-    // 初始化时区
     tz.initializeTimeZones();
   }
 
@@ -36,12 +32,13 @@ class NotificationService {
     String body,
     DateTime scheduledDate,
   ) async {
+    // 2. 定时通知：前5个参数必须按顺序填，不能带名字！
     await _notifications.zonedSchedule(
-      id: id.hashCode % 100000, // 参数名 id
-      title: title,             // 参数名 title
-      body: body,               // 参数名 body
-      scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local), // 参数名 scheduledDate
-      notificationDetails: const NotificationDetails( // 参数名 notificationDetails
+      id.hashCode % 100000,                  // 参数1：ID
+      title,                                 // 参数2：标题
+      body,                                  // 参数3：内容
+      tz.TZDateTime.from(scheduledDate, tz.local), // 参数4：时间
+      const NotificationDetails(             // 参数5：详情配置
         android: AndroidNotificationDetails(
           'medicine_channel',
           'Medicine Reminders',
@@ -51,16 +48,17 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
+      // 后面的参数才是带名字的
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, // 新版本建议加上这个
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, // 18.0.1 必须加这个
     );
   }
 
   static Future<void> cancelNotification(int id) async {
-    // 取消：必须加参数名 id
-    await _notifications.cancel(id: id);
+    // 3. 取消通知：id 是位置参数，不要写 id:
+    await _notifications.cancel(id);
   }
 
   static Future<void> showImmediateNotification(
@@ -76,12 +74,12 @@ class NotificationService {
       iOS: DarwinNotificationDetails(),
     );
 
-    // 显示：所有参数都必须带名字
+    // 4. 立即显示：前4个参数必须按顺序填
     await _notifications.show(
-      id: 0,
-      title: title,
-      body: body,
-      notificationDetails: details,
+      0,      // 参数1：ID
+      title,  // 参数2：标题
+      body,   // 参数3：内容
+      details // 参数4：详情配置
     );
   }
 }
