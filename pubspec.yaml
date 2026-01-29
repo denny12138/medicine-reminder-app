@@ -29,7 +29,7 @@ dependencies:
   lottie: ^2.7.0
   
   # Notifications
-  flutter_local_notifications: ^20.0.0
+  flutter_local_notifications: ^18.0.1
   timezone: ^0.10.1
   
   # UI components
